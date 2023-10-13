@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,8 +14,8 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::post('players', [UsserController::class, 'register']); //crea jugador
-Route::post('login', [UsserController::class, 'login']); 
+Route::post('players', [UserController::class, 'register']); //crea jugador
+Route::post('login', [UserController::class, 'login']); 
 
 Route::middleware('auth:api')->group(function() {
    
