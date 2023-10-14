@@ -109,10 +109,10 @@ class UserController extends Controller
                 'message' => 'You dont have the permission to update the name.'], 401);
         } 
 
-        if (empty($updated_name)) {
+        /*if (empty($updated_name)) {
             return response()->json([
                 'error' => 'The field is required.'], 422);
-        }
+        }*/
 
         $validation_rules = [
             'name' => 'unique:users',
@@ -128,8 +128,14 @@ class UserController extends Controller
             return response()->json([
                 'message' => $validator->errors()], 422);
         }
-
+        
+        
         $updated_name = $request-> input('name');
+
+        if(empty($updated_name)){
+            return response()->json([
+                'error' => 'The field is required.'], 422);
+        }
 
         if ($updated_name !== $user->name){
                 
@@ -159,5 +165,11 @@ class UserController extends Controller
             'message' => 'Log out done!'
         ], 200);
 
+    }
+    public function player_list(){
+
+    $users = User::orderBy('wins_rate', 'desc')->get();
+
+    return response()->json(['users' => $users], 200);
     }
 }

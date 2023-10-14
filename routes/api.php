@@ -19,9 +19,10 @@ Route::post('login', [UserController::class, 'login']);
 Route::middleware('auth:api')->group(function() {
    
     Route::put('/players/{id}',[UserController::class, 'update']); //modifica nom jugador
+
     Route::post('/players/{id}/games',[UserController::class, 'play'])->middleware('role:player'); //jugador realitza una jugada 
     Route::delete('/players/{id}/games',[UserController::class, 'destroy'])->middleware('role:player'); //elimina totes tirades jugador X
-    Route::get('players',[UserController::class, 'index'])->middleware('role:admin'); //retorna tots jugadors
+    Route::get('players',[UserController::class, 'player_list'])->middleware('role:admin'); //retorna tots jugadors
     Route::get('/players/{id}/games', [UserController::class, 'index'])->middleware('role:player'); // llistat jugades jugador X
     Route::get('/plaers/ranking',[UserController::class, 'ranking'])->middleware('role:admin'); // % mitjà d'exits
     Route::get('/plaers/ranking/loser',[UserController::class, 'ranking.loser'])->middleware('role:admin'); // jugador amb % exit mes baix
