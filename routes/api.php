@@ -1,8 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +18,7 @@ Route::post('login', [UserController::class, 'login']);
 
 Route::middleware('auth:api')->group(function() {
    
-    Route::put('/players/{id}',[UserController::class, 'update']) ->middleware('role:player'); //modifica nom jugador
+    Route::put('/players/{id}',[UserController::class, 'update']); //modifica nom jugador
     Route::post('/players/{id}/games',[UserController::class, 'play'])->middleware('role:player'); //jugador realitza una jugada 
     Route::delete('/players/{id}/games',[UserController::class, 'destroy'])->middleware('role:player'); //elimina totes tirades jugador X
     Route::get('players',[UserController::class, 'index'])->middleware('role:admin'); //retorna tots jugadors
@@ -30,6 +29,6 @@ Route::middleware('auth:api')->group(function() {
 
 
 
-    Route::post('logout',[UserController::class, 'logout'])->middleware('role:admin|player');
+    Route::post('logout',[UserController::class, 'logout']);
 });
 

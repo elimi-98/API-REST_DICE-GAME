@@ -44,9 +44,9 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ])->assignRole('player');
 
-        $accessToken = $user->createToken('authToken')->accessToken;
+        /**$accessToken = $user->createToken('authToken')->accessToken;
        
-       /**return response()->json([ 
+       return response()->json([ 
         'user' => $user,
         'accessToken' => $accessToken,
         ], 201); **/
@@ -100,4 +100,64 @@ class UserController extends Controller
 
         }
     
+    public function update(Request $request, $id){
+     
+        $user = User::find($id); 
+
+        if ($user->id !== Auth::user()->id) {
+            return response()->json([
+                'message' => 'You dont have the permission to update the name.'], 401);
+        } 
+
+        if (empty($updated_name)) {
+            return response()->json([
+                'error' => 'The field is required.'], 422);
+        }
+
+        $validation_rules = [
+            'name' => 'unique:users',
+        ];
+
+        $messages = [
+            'name.unique' => 'The name already exists.',
+        ];
+
+        $validator = Validator::make($request->only('name'), $validation_rules, $messages);
+        
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()], 422);
+        }
+
+        $updated_name = $request-> input('name');
+
+        if ($updated_name !== $user->name){
+                
+            $user->name = $updated_name;
+            
+            $user->update();
+
+            return response()->json([
+                'message' => 'The name has been updated.',
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Try a new name, please.',
+        ], 200);
+    }
+
+    public function logout(){
+      
+        /** @var \App\Models\User $user **/
+        $user = Auth::user();
+
+        $token = $user->token();
+        $token->revoke();
+
+        return response()->json([
+            'message' => 'Log out done!'
+        ], 200);
+
+    }
 }
