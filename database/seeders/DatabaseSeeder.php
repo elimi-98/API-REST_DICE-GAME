@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
         'password' => bcrypt(123456789), // password
         'remember_token' => Str::random(10),
 
-     ])->assignRole('player');
+        ])->assignRole('player');
 
 
     }
