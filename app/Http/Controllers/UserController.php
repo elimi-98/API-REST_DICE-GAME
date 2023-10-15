@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 
+
 class UserController extends Controller
 {
     public function register(Request $request){
@@ -166,7 +167,7 @@ class UserController extends Controller
         ], 200);
 
     }
-    public function player_list(){
+    public function players_list(){
 
     $users = User::orderBy('wins_rate', 'desc')->get();
 
