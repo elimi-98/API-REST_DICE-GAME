@@ -34,3 +34,9 @@ Route::middleware('auth:api')->group(function() {
     Route::post('logout',[UserController::class, 'logout']);
 });
 
+
+Route::get('/', function () {
+    
+    return response()->json(['Log in again, please.'], 401);
+    
+})->name('login');
