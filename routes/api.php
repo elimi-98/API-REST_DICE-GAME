@@ -25,9 +25,9 @@ Route::middleware('auth:api')->group(function() {
     Route::delete('/players/{id}/games',[GameController::class, 'delete_games'])->middleware('role:player'); //elimina totes tirades jugador X
     Route::get('players',[UserController::class, 'players_list'])->middleware('role:admin'); //retorna tots jugadors
     Route::get('/players/{id}/games', [GameController::class, 'games_list'])->middleware('role:player'); // llistat jugades jugador X
-    Route::get('/plaers/ranking',[UserController::class, 'ranking'])->middleware('role:admin'); // % mitjà d'exits
-    Route::get('/plaers/ranking/loser',[UserController::class, 'loser'])->middleware('role:admin'); // jugador amb % exit mes baix
-    Route::get('/plaers/ranking/winner',[UserController::class, 'winner'])->middleware('role:admin'); //jugador amb % exit mes alt
+    Route::get('/players/ranking',[UserController::class, 'ranking'])->middleware('role:admin'); // % mitjà d'exits
+    Route::get('/players/ranking/loser',[UserController::class, 'loser'])->middleware('role:admin'); // jugador amb % exit mes baix
+    Route::get('/players/ranking/winner',[UserController::class, 'winner'])->middleware('role:admin'); //jugador amb % exit mes alt
 
 
 
