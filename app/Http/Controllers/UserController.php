@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Game;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
+
 
 class UserController extends Controller
 {
@@ -109,10 +111,10 @@ class UserController extends Controller
                 'message' => 'You dont have the permission to update the name.'], 401);
         } 
 
-        if (empty($updated_name)) {
+        /*if (empty($updated_name)) {
             return response()->json([
                 'error' => 'The field is required.'], 422);
-        }
+        }*/
 
         $validation_rules = [
             'name' => 'unique:users',
@@ -128,8 +130,14 @@ class UserController extends Controller
             return response()->json([
                 'message' => $validator->errors()], 422);
         }
-
+        
+        
         $updated_name = $request-> input('name');
+
+        if(empty($updated_name)){
+            return response()->json([
+                'error' => 'The field is required.'], 422);
+        }
 
         if ($updated_name !== $user->name){
                 
@@ -159,5 +167,72 @@ class UserController extends Controller
             'message' => 'Log out done!'
         ], 200);
 
+    }
+    public function players_list(){
+
+    $users = User::orderBy('wins_rate', 'desc')->get();
+
+    return response()->json(['users' => $users], 200);
+    }
+
+    public function ranking(){
+    
+        $totalGames = Game::count(); 
+        $gamesWon = Game::where('game_won', true)->count(); 
+
+        $rate= $totalGames > 0 ? ($gamesWon / $totalGames) * 100 : 0;
+
+        return response()->json([
+            'Total games' => $totalGames, 'All players games rate' => round($rate,2)
+        ], 200);
+    }
+
+    public function winner(){
+        
+        $id = Auth::id();
+        $user = User::find($id); 
+
+        if ($user->hasRole('admin')){
+            
+            $winner = User::whereHas('roles', function ($query) {
+                $query->where('name', 'player');
+            })->orderBy('wins_rate', 'desc')->first();
+
+            if ($winner) {
+
+                $game_won = $winner->games()->where('game_won', true)->count();
+                $wins_rate = round($winner->wins_rate,2);
+                return response()->json([
+                    'name' => $winner->name,'Wins rate' => $wins_rate,  'Wins' => $game_won, 'Total Games' => $winner->games()->count()], 200);
+            } else {
+                return response()->json([
+                    'message' => 'There is no winner'], 404);
+            }
+        }
+    }
+
+    public function loser(){
+
+        $id = Auth::id();
+        $user = User::find($id); 
+
+        if ($user->hasRole('admin')){
+            
+            $loser = User::whereHas('roles', function ($query) {
+                $query->where('name', 'player');
+            })->orderBy('wins_rate', 'asc')->first();
+
+            if ($loser) {
+
+                $game_won = $loser->games()->where('game_won', true)->count();
+                $wins_rate = round($loser->wins_rate,2);
+
+                return response()->json([
+                    'Name' => $loser->name,'Wins rate' => $wins_rate,  'Wins' => $game_won, 'Total games' => $loser->games()->count()], 200);
+            } else {
+                return response()->json([
+                    'message' => 'There is no winner'], 404);
+            }
+        }
     }
 }
