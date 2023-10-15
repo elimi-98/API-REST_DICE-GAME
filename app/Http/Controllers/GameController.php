@@ -84,7 +84,27 @@ class GameController extends Controller
         }
         }
 
-    public function delete_games(){
+        public function delete_games($id) {
+            $authUser = Auth::user();
         
-    }
+            if ($authUser->id == $id) {
+                $games = $authUser->games;
+        
+                if ($games->count() > 0) {
+                    foreach ($games as $game) {
+                        $game->delete();
+                    }
+        
+                    return response()->json([
+                        'message' => 'The games have been deleted'
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'message' => 'You do not have any games to delete.'
+                    ], 204);
+                }
+            }
+            return response()->json(['message' => 'Not authorized'], 401);
+        }
+        
 }
