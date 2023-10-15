@@ -110,12 +110,7 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'You dont have the permission to update the name.'], 401);
         } 
-
-        /*if (empty($updated_name)) {
-            return response()->json([
-                'error' => 'The field is required.'], 422);
-        }*/
-
+        
         $validation_rules = [
             'name' => 'unique:users',
         ];
