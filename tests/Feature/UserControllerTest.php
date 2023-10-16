@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Laravel\Passport\Passport;
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\Game; 
 
 
 class UserControllerTest extends TestCase
@@ -104,7 +105,7 @@ class UserControllerTest extends TestCase
     {
         $user_data = [
             'name' => 'User',
-            'email' => 'user@example.com',
+            'email' => 'user@gmail.com',
             'password' => 'o',
         ];
 
@@ -282,21 +283,77 @@ class UserControllerTest extends TestCase
     }
 
     // game
-    public function testPlayersList()
-{
-    $admin = User::factory()->create();
-    $admin->assignRole('admin');
-    Passport::actingAs($admin);
+    public function testPlayersList(){
 
-    User::factory(5)->create();
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        Passport::actingAs($admin);
 
-    $response = $this->get('/api/players');
+        User::factory(5)->create();
 
-    $response->assertStatus(200);
+        $response = $this->get('/api/players');
 
-    $response->assertJsonStructure(['users']);
+        $response->assertStatus(200);
 
-    $response->assertJsonCount(8, 'users');
-}
-  
+        $response->assertJsonStructure(['users']);
+
+        $response->assertJsonCount(8, 'users');
+    }
+
+    public function testRankingWithAdminRole(){
+
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        Passport::actingAs($admin);
+
+        $totalGames = Game::count();
+        $gamesWon = Game::where('game_won', true)->count();
+        $winRate = $totalGames > 0 ? ($gamesWon / $totalGames) * 100 : 0;
+
+        $response = $this->get('/api/players/ranking');
+
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'Total games' => $totalGames,
+            'All players games rate' => round($winRate, 2),
+        ]);
+    }
+
+    public function testRankingWinnerWithAdminRole(){
+
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        Passport::actingAs($admin);
+
+        $response = $this->get('/api/players/ranking/winner');
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'name',
+            'Wins rate',
+            'Wins',
+            'Total Games',
+        ]);
+    }
+    public function testRankingLoserWithAdminRole(){
+
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        Passport::actingAs($admin);
+
+        $response = $this->get('/api/players/ranking/winner');
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'name',
+            'Wins rate',
+            'Wins',
+            'Total Games',
+        ]);
+    }
+
+    
 }

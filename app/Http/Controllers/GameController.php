@@ -101,7 +101,7 @@ class GameController extends Controller
                 } else {
                     return response()->json([
                         'message' => 'You do not have any games to delete.'
-                    ], 204);
+                    ], 202);
                 }
             }
             return response()->json(['message' => 'Not authorized'], 401);
