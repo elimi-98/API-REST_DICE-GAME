@@ -7,6 +7,7 @@ use Laravel\Passport\Passport;
 use Tests\TestCase;
 use App\Models\User;
 
+
 class UserControllerTest extends TestCase
 {
     use DatabaseTransactions;
@@ -146,46 +147,156 @@ class UserControllerTest extends TestCase
         $this->assertTrue($user->hasRole('player'));
     }
 
+    //login 
+
+        public function testLoginWithValidData()
+    {
+        $user = User::factory()->create([
+            'email' => 'melina@gmail.com',
+            'password' => bcrypt('123456789'), 
+        ]);
+
+        $response = $this->json('POST', '/api/login', [
+            'email' => 'melina@gmail.com',
+            'password' => '123456789',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'message',
+                'user',
+                'accessToken',
+            ]);
+    }
+
+    public function testLoginWithInvalidData()
+    {
+        $response = $this->json('POST', '/api/login', [
+            'email' => 'nonexistent@gmail.com', 
+            'password' => 'invalidpassword', 
+        ]);
+
+        $response->assertStatus(401)
+            ->assertJson([
+                'message' => 'Incorrect credentials',
+            ]);
+    }
+
+    //logout
+    public function testLogout()
+    {
+        $user = new User();
+        $user->name = 'Usuario de Prueba';
+        $user->email = 'prueba@correo.com';
+        $user->password = bcrypt('contraseña');
+        $user->save();
+
+        $this->actingAs($user);
+
+        $response = $this->post('/api/logout');
+
+        $response->assertStatus(302);
+
+    }
+
+    
     // update method
-    protected function registerUser($name, $email, $password)
+    public function testUpdateWithValidData()
+    {
+        $user = User::factory()->create([
+            'name' => 'AntiguoNombre',
+        ]);
+
+        Passport::actingAs($user);
+
+        $data = [
+            'name' => 'NuevoNombre',
+        ];
+
+        $response = $this->json('PUT', '/api/players/' . $user->id, $data);
+
+        $response->assertStatus(200)
+            ->assertJson(['message' => 'The name has been updated.']);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'name' => 'NuevoNombre',
+        ]);
+    }
+    
+    public function testUpdateWithSameName()
+    {
+        $user = User::factory()->create([
+            'name' => 'AntiguoNombre',
+        ]);
+    
+        Passport::actingAs($user);
+    
+        $data = [
+            'name' => 'AntiguoNombre', 
+        ];
+    
+        $response = $this->json('PUT', '/api/players/' . $user->id, $data);
+    
+        $response->assertStatus(422)
+            ->assertJson(['message' => 'Try a new name, please.']);
+    
+    }
+
+    public function testUpdateWithEmptyName()
+    {
+        $user = User::factory()->create([
+            'name' => 'AntiguoNombre',
+        ]);
+
+        Passport::actingAs($user);
+
+        $data = [
+            'name' => '', // Campo del nombre vacío
+        ];
+
+        $response = $this->json('PUT', '/api/players/' . $user->id, $data);
+
+        $response->assertStatus(422)
+            ->assertJson(['error' => 'The field is required.']);
+    }
+
+        public function testUnauthorizedUpdate()
+    {
+        $user = User::factory()->create([
+            'name' => 'AntiguoNombre',
+        ]);
+
+        $otherUser = User::factory()->create();
+
+        Passport::actingAs($user);
+
+        $data = [
+            'name' => 'NuevoNombre', 
+        ];
+
+        $response = $this->json('PUT', '/api/players/' . $otherUser->id, $data);
+
+        $response->assertStatus(401)
+            ->assertJson(['message' => 'You dont have the permission to update the name.']);
+    }
+
+    // game
+    public function testPlayersList()
 {
-    $response = $this->json('POST', '/api/players', [
-        'name' => $name,
-        'email' => $email,
-        'password' => $password,
-    ]);
+    $admin = User::factory()->create();
+    $admin->assignRole('admin');
+    Passport::actingAs($admin);
 
-    $response->assertStatus(201); // Asegura que el registro sea exitoso
+    User::factory(5)->create();
 
-    // Puedes devolver cualquier información relevante que quieras de la respuesta, como el usuario creado.
-    // Por ejemplo, si la respuesta devuelve un JSON con los datos del usuario, podrías hacer:
-    return $response->json();
+    $response = $this->get('/api/players');
+
+    $response->assertStatus(200);
+
+    $response->assertJsonStructure(['users']);
+
+    $response->assertJsonCount(8, 'users');
 }
-protected function loginUser($email, $password)
-{
-    $response = $this->json('POST', '/api/login', [
-        'email' => $email,
-        'password' => $password,
-    ]);
-
-    $response->assertStatus(200); // Asegura que el inicio de sesión sea exitoso
-
-    // Puedes devolver cualquier información relevante que quieras de la respuesta, como el token de acceso.
-    // Por ejemplo, si la respuesta devuelve un JSON con el token, podrías hacer:
-    return $response->json('access_token');
-}
-
-
-    public function testSuccessfulUpdate()
-{
-    $user = $this->registerUser('Usuario1', 'usuario1@example.com', 'securepassword');
-
-    $token = $this->loginUser('usuario1@example.com', 'securepassword');
-
-    $response = $this->updateUser($user->id, 'NuevoNombre', $token);
-
-    $response->assertStatus(200)
-        ->assertJson(['message' => 'The name has been updated.']);
-}
-
+  
 }

@@ -111,21 +111,7 @@ class UserController extends Controller
                 'message' => 'You dont have the permission to update the name.'], 401);
         } 
         
-        $validation_rules = [
-            'name' => 'unique:users',
-        ];
 
-        $messages = [
-            'name.unique' => 'The name already exists.',
-        ];
-
-        $validator = Validator::make($request->only('name'), $validation_rules, $messages);
-        
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => $validator->errors()], 422);
-        }
-        
         
         $updated_name = $request-> input('name');
 
@@ -135,7 +121,19 @@ class UserController extends Controller
         }
 
         if ($updated_name !== $user->name){
-                
+            
+            $validation_rules = [
+                'name' => 'unique:users',
+            ];
+
+    
+            $validator = Validator::make($request->only('name'), $validation_rules);
+            
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => $validator->errors()], 422);
+            }
+
             $user->name = $updated_name;
             
             $user->update();
@@ -143,11 +141,12 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'The name has been updated.',
             ], 200);
-        }
+        } else{
 
-        return response()->json([
-            'message' => 'Try a new name, please.',
-        ], 200);
+            return response()->json([
+                'message' => 'Try a new name, please.',
+            ], 422);
+    }
     }
 
     public function logout(){
