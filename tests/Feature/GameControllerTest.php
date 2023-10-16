@@ -30,23 +30,6 @@ class GameControllerTest extends TestCase
     }
      
 
-   /*  public function testNewGameUnauthorized(){
-    
-        $player = User::factory()->create();
-
-        $player2 = User::factory()->create();
-
-        Passport::actingAs($player);
-
-
-        $response = $this->post('/api/players/'. $player2->id. '/games');
-
-        $response->assertStatus(403);
-
-        $response->assertJson(['message' => 'Not authorized']);
-
-    }*/
-
   public function testGamesListAuthorizedWithGame()
 {
     $user = User::factory()->create();
