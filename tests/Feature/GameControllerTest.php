@@ -30,28 +30,28 @@ class GameControllerTest extends TestCase
     }
      
 
-  public function testGamesListAuthorizedWithGame()
-{
-    $user = User::factory()->create();
-    $user->assignRole('player');
+    public function testGamesListAuthorizedWithGame(){
+        
+        $user = User::factory()->create();
+        $user->assignRole('player');
 
-    Passport::actingAs($user);
+        Passport::actingAs($user);
 
-    $game = new Game();
-    $game->user_id = $user->id;
-    $game->first_dice = 3;
-    $game->second_dice = 4;
-    $game->game_won = false;
-    $game->save();
+        $game = new Game();
+        $game->user_id = $user->id;
+        $game->first_dice = 3;
+        $game->second_dice = 4;
+        $game->game_won = false;
+        $game->save();
 
-    $response = $this->get('/api/players/'.$user->id.'/games');
+        $response = $this->get('/api/players/'.$user->id.'/games');
 
-    $response->assertStatus(200);
-    $response->assertJsonStructure([
-        'game_list',
-        'wins_rate',
-    ]);
-}
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'game_list',
+            'wins_rate',
+        ]);
+    }
 
 
     public function testGamesListNoGames(){
@@ -61,7 +61,7 @@ class GameControllerTest extends TestCase
 
         Passport::actingAs($user);
 
-        $response = $this->get("/api/players/{$user->id}/games");
+        $response = $this->get('/api/players/'.$user->id.'/games');
 
         $response->assertStatus(202);
         $response->assertJson(['message' => 'Play a game to register.']);
@@ -77,7 +77,7 @@ class GameControllerTest extends TestCase
 
         Passport::actingAs($user);
 
-        $response = $this->get("/api/players/{$otherUser->id}/games");
+        $response = $this->get('/api/players/'.$otherUser->id.'/games');
 
         $response->assertStatus(401);
         $response->assertJson(['message' => 'Not authorized.']);

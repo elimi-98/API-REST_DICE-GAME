@@ -15,8 +15,8 @@ class UserControllerTest extends TestCase
 
     // register method
 
-    public function testEmptyDatesValidation()
-    {
+    public function testEmptyDatesValidation(){
+
         $response = $this->json('POST', '/api/players', []);
 
         $response->assertStatus(422)
@@ -28,8 +28,8 @@ class UserControllerTest extends TestCase
         ]);
     }
     
-    public function testValidRegistration()
-    {
+    public function testValidRegistration(){
+
         $user_info = [
             'name' => 'Melina',
             'email' => 'melina@gmail.com',
@@ -42,8 +42,8 @@ class UserControllerTest extends TestCase
             ->assertJson(['message' => 'Register completed']);
     }
 
-    public function testDuplicateNameValidation()
-    {
+    public function testDuplicateNameValidation(){
+
         $user = User::factory()->create();
 
         $user_data = [
@@ -63,8 +63,8 @@ class UserControllerTest extends TestCase
         
     }
 
-    public function testDuplicateEmailValidation()
-    {
+    public function testDuplicateEmailValidation(){
+
         $user = User::factory()->create();
 
         $user_data = [
@@ -83,8 +83,8 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    public function testInvalidEmailValidation()
-    {
+    public function testInvalidEmailValidation(){
+
         $user_data = [
             'name' => 'Invalid User',
             'email' => 'invalid_email',
@@ -101,8 +101,8 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    public function testShortPasswordValidation()
-    {
+    public function testShortPasswordValidation(){
+
         $user_data = [
             'name' => 'User',
             'email' => 'user@gmail.com',
@@ -119,8 +119,8 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    public function testValidPasswordValidation()
-    {
+    public function testValidPasswordValidation(){
+
         $user_data = [
             'name' => 'Sara',
             'email' => 'sara@gmail.com',
@@ -133,8 +133,8 @@ class UserControllerTest extends TestCase
             ->assertJson(['message' => 'Register completed']);
     }
 
-    public function testRoleAssignment()
-    {
+    public function testRoleAssignment(){
+
         $user_data = [
             'name' => 'Melina',
             'email' => 'melina@gmail.com',
@@ -150,8 +150,8 @@ class UserControllerTest extends TestCase
 
     //login 
 
-        public function testLoginWithValidData()
-    {
+    public function testLoginWithValidData(){
+        
         $user = User::factory()->create([
             'email' => 'melina@gmail.com',
             'password' => bcrypt('123456789'), 
@@ -170,8 +170,8 @@ class UserControllerTest extends TestCase
             ]);
     }
 
-    public function testLoginWithInvalidData()
-    {
+    public function testLoginWithInvalidData(){
+
         $response = $this->json('POST', '/api/login', [
             'email' => 'nonexistent@gmail.com', 
             'password' => 'invalidpassword', 
@@ -184,8 +184,8 @@ class UserControllerTest extends TestCase
     }
 
     //logout
-    public function testLogout()
-    {
+    public function testLogout(){
+
         $user = new User();
         $user->name = 'Usuario de Prueba';
         $user->email = 'prueba@correo.com';
@@ -202,8 +202,8 @@ class UserControllerTest extends TestCase
 
     
     // update method
-    public function testUpdateWithValidData()
-    {
+    public function testUpdateWithValidData(){
+
         $user = User::factory()->create([
             'name' => 'AntiguoNombre',
         ]);
@@ -225,8 +225,8 @@ class UserControllerTest extends TestCase
         ]);
     }
     
-    public function testUpdateWithSameName()
-    {
+    public function testUpdateWithSameName(){
+
         $user = User::factory()->create([
             'name' => 'AntiguoNombre',
         ]);
@@ -244,8 +244,8 @@ class UserControllerTest extends TestCase
     
     }
 
-    public function testUpdateWithEmptyName()
-    {
+    public function testUpdateWithEmptyName(){
+
         $user = User::factory()->create([
             'name' => 'AntiguoNombre',
         ]);
@@ -262,8 +262,8 @@ class UserControllerTest extends TestCase
             ->assertJson(['error' => 'The field is required.']);
     }
 
-        public function testUnauthorizedUpdate()
-    {
+    public function testUnauthorizedUpdate(){
+
         $user = User::factory()->create([
             'name' => 'AntiguoNombre',
         ]);
@@ -354,6 +354,5 @@ class UserControllerTest extends TestCase
             'Total Games',
         ]);
     }
-
     
 }

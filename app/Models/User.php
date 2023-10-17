@@ -52,8 +52,8 @@ class User extends Authenticatable
 
     public function getWinsRateAttribute()
 {
-    $totalGames = $this->games()->count(); // Obtener el número de juegos del usuario actual
-    $gamesWon = $this->games()->where('game_won', true)->count(); // Obtener el número de juegos ganados
+    $totalGames = $this->games()->count(); 
+    $gamesWon = $this->games()->where('game_won', true)->count(); 
 
     return $totalGames > 0 ? ($gamesWon / $totalGames) * 100 : 0;
 }

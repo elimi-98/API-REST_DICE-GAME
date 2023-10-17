@@ -4,17 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use App\Models\Game;
-use Spatie\Permission\Contracts\Role;
-use Spatie\Permission\Traits\HasRoles;
 
 
-class GameController extends Controller
-{   
+class GameController extends Controller{
+
     public function new_game($id){
         
         $id = Auth::id();
@@ -82,29 +77,29 @@ class GameController extends Controller
         } else {
             return response()->json(['message' => 'Not authorized.'], 401);
         }
-        }
+    }
 
-        public function delete_games($id) {
-            $authUser = Auth::user();
-        
-            if ($authUser->id == $id) {
-                $games = $authUser->games;
-        
-                if ($games->count() > 0) {
-                    foreach ($games as $game) {
-                        $game->delete();
-                    }
-        
-                    return response()->json([
-                        'message' => 'The games have been deleted'
-                    ], 200);
-                } else {
-                    return response()->json([
-                        'message' => 'You do not have any games to delete.'
-                    ], 202);
+    public function delete_games($id) {
+        $authUser = Auth::user();
+    
+        if ($authUser->id == $id) {
+            $games = $authUser->games;
+    
+            if ($games->count() > 0) {
+                foreach ($games as $game) {
+                    $game->delete();
                 }
+    
+                return response()->json([
+                    'message' => 'The games have been deleted'
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => 'You do not have any games to delete.'
+                ], 202);
             }
-            return response()->json(['message' => 'Not authorized'], 401);
         }
+        return response()->json(['message' => 'Not authorized'], 401);
+    }
         
 }

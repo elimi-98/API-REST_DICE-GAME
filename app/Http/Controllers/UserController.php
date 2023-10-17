@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Spatie\Permission\Models\Role;
 
 
 class UserController extends Controller
@@ -17,7 +16,7 @@ class UserController extends Controller
     public function register(Request $request){
         
         $validation_rules = [
-            'name' => 'nullable|unique:users',
+            'name' => 'nullable|unique:users, name',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8',
         ];
@@ -45,13 +44,6 @@ class UserController extends Controller
             'email' => $request-> email,
             'password' => Hash::make($request->password),
         ])->assignRole('player');
-
-        /**$accessToken = $user->createToken('authToken')->accessToken;
-       
-       return response()->json([ 
-        'user' => $user,
-        'accessToken' => $accessToken,
-        ], 201); **/
 
         return response()->json(['message' => 'Register completed'], 201); 
     }
@@ -100,7 +92,7 @@ class UserController extends Controller
                 ], 401);
             }
 
-        }
+    }
     
     public function update(Request $request, $id){
      
@@ -146,7 +138,7 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'Try a new name, please.',
             ], 422);
-    }
+        }
     }
 
     public function logout(){
@@ -162,6 +154,7 @@ class UserController extends Controller
         ], 200);
 
     }
+    
     public function players_list(){
 
     $users = User::orderBy('wins_rate', 'desc')->get();
