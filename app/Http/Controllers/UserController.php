@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Spatie\Permission\Models\Role;
 
 
 class UserController extends Controller
@@ -17,7 +16,7 @@ class UserController extends Controller
     public function register(Request $request){
         
         $validation_rules = [
-            'name' => 'nullable|unique:users',
+            'name' => 'nullable|unique:users, name',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8',
         ];
@@ -45,13 +44,6 @@ class UserController extends Controller
             'email' => $request-> email,
             'password' => Hash::make($request->password),
         ])->assignRole('player');
-
-        /**$accessToken = $user->createToken('authToken')->accessToken;
-       
-       return response()->json([ 
-        'user' => $user,
-        'accessToken' => $accessToken,
-        ], 201); **/
 
         return response()->json(['message' => 'Register completed'], 201); 
     }
@@ -100,7 +92,7 @@ class UserController extends Controller
                 ], 401);
             }
 
-        }
+    }
     
     public function update(Request $request, $id){
      
@@ -110,27 +102,8 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'You dont have the permission to update the name.'], 401);
         } 
-
-        /*if (empty($updated_name)) {
-            return response()->json([
-                'error' => 'The field is required.'], 422);
-        }*/
-
-        $validation_rules = [
-            'name' => 'unique:users',
-        ];
-
-        $messages = [
-            'name.unique' => 'The name already exists.',
-        ];
-
-        $validator = Validator::make($request->only('name'), $validation_rules, $messages);
         
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => $validator->errors()], 422);
-        }
-        
+
         
         $updated_name = $request-> input('name');
 
@@ -140,7 +113,19 @@ class UserController extends Controller
         }
 
         if ($updated_name !== $user->name){
-                
+            
+            $validation_rules = [
+                'name' => 'unique:users',
+            ];
+
+    
+            $validator = Validator::make($request->only('name'), $validation_rules);
+            
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => $validator->errors()], 422);
+            }
+
             $user->name = $updated_name;
             
             $user->update();
@@ -148,11 +133,12 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'The name has been updated.',
             ], 200);
-        }
+        } else{
 
-        return response()->json([
-            'message' => 'Try a new name, please.',
-        ], 200);
+            return response()->json([
+                'message' => 'Try a new name, please.',
+            ], 422);
+        }
     }
 
     public function logout(){
@@ -168,6 +154,7 @@ class UserController extends Controller
         ], 200);
 
     }
+    
     public function players_list(){
 
     $users = User::orderBy('wins_rate', 'desc')->get();
