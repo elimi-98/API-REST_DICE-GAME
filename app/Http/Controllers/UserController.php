@@ -16,7 +16,7 @@ class UserController extends Controller
     public function register(Request $request){
         
         $validation_rules = [
-            'name' => 'nullable|unique:users, name',
+            'name' => 'nullable|unique:users',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8',
         ];
