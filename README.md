@@ -6,16 +6,16 @@ The game consists of rolling two dice and winning the round if the sum of the tw
 
 ## API endpoints
 
-POST /players : create a player
-PUT /players/{id} : edit player's name
-POST /players/{id}/games/ : a particular player rolls the dices
-DELETE /players/{id}/games: delete a player's games
-GET /players: returns the list of players and its average wins rate 
-GET /players/{id}/games: returns the list of games of a particular player
-GET /players/ranking: returns the ranking
-GET /players/ranking/loser: returns the player with lowest wins rate
-GET /players/ranking/winner: returns the player with highest wins rate
-DELETE /players/{id}: delete a player
+- POST /players : create a player
+- PUT /players/{id} : edit player's name
+- POST /players/{id}/games/ : a particular player rolls the dices
+- DELETE /players/{id}/games: delete a player's games
+- GET /players: returns the list of players and its average wins rate 
+- GET /players/{id}/games: returns the list of games of a particular player
+- GET /players/ranking: returns the ranking
+- GET /players/ranking/loser: returns the player with lowest wins rate
+- GET /players/ranking/winner: returns the player with highest wins rate
+- DELETE /players/{id}: delete a player
 
 ### Roles
 There are two types of users in this application:
